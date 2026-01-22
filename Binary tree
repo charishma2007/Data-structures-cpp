@@ -1,0 +1,66 @@
+#include<iostream>
+using namespace std;
+class Node{
+    public:
+    int data;
+    Node* left;
+    Node* right;
+
+    Node(int value){
+        data = value;
+        left = right = NULL;
+    }
+};
+//inorder --> left-root-right
+void inorder(Node* root){
+    if(root == NULL){
+        return;
+    }
+    inorder(root->left);
+    cout << (root -> data) << " ";
+    inorder(root->right);
+}
+void preorder(Node* root){
+    if(root == NULL){
+        return;
+    }
+    cout << (root -> data) << " ";
+    preorder(root->left);
+    preorder(root->right);
+
+}
+void postorder(Node* root){
+    if(root == NULL){
+        return;
+    }
+    postorder(root->left);
+    postorder(root->right);
+    cout << (root -> data) << " ";
+}
+Node* createtree(){
+    int value;
+    cin >> value;
+    
+    if(value == -1){
+        return NULL;
+    }
+    Node* root = new Node(value);
+    cout << "left: " << value << endl;
+    root->left = createtree();
+    cout << "right: " << value << endl;
+    root->right = createtree();
+
+    return root;
+}
+int main(){
+    cout << "create a binary tree" << endl;
+    Node* root = createtree();
+    cout << "inorder: ";
+    inorder(root);
+
+    cout << "preorder: ";
+    preorder(root);
+
+    cout << "postorder: ";
+    postorder(root);
+}
