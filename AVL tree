@@ -1,0 +1,170 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Node{
+public:
+    int data;
+    int height;
+    Node* left;
+    Node* right;
+
+    Node(int val){
+        data = val;
+        height = 0;
+        left = right = NULL;
+    }
+};
+
+class Tree{
+public:
+    Node* root;
+
+    Tree(){
+        root = NULL;
+    }
+
+    int height(Node* root){
+        if(root == NULL) return -1;
+        return root->height;
+    }
+
+    Node* leftrotation(Node* p){
+        Node* x = p->right;
+        Node* y = x->left;
+
+        x->left = p;
+        p->right = y;
+
+        p->height = max(height(p->left), height(p->right)) + 1;
+        x->height = max(height(x->left), height(x->right)) + 1;
+
+        return x;
+    }
+
+    Node* rightrotation(Node* p){
+        Node* x = p->left;
+        Node* y = x->right;
+
+        x->right = p;
+        p->left = y;
+
+        p->height = max(height(p->left), height(p->right)) + 1;
+        x->height = max(height(x->left), height(x->right)) + 1;
+
+        return x;
+    }
+
+    Node* insert(Node* root, int val){
+        if(root == NULL)
+            return new Node(val);
+
+        if(val > root->data)
+            root->right = insert(root->right, val);
+        else
+            root->left = insert(root->left, val);
+
+        root->height = max(height(root->left), height(root->right)) + 1;
+        int balancefactor = height(root->left) - height(root->right);
+
+        // LL
+        if(balancefactor > 1 && val < root->left->data)
+            return rightrotation(root);
+
+        // LR
+        if(balancefactor > 1 && val > root->left->data){
+            root->left = leftrotation(root->left);
+            return rightrotation(root);
+        }
+
+        // RR
+        if(balancefactor < -1 && val > root->right->data)
+            return leftrotation(root);
+
+        // RL
+        if(balancefactor < -1 && val < root->right->data){
+            root->right = rightrotation(root->right);
+            return leftrotation(root);
+        }
+
+        return root;
+    }
+
+    void insertinto(int val){
+        root = insert(root, val);
+    }
+
+    Node* Findmin(Node* root){
+        while(root->left != NULL)
+            root = root->left;
+        return root;
+    }
+
+    Node* AVLdelete(Node* root, int key){
+        if(root == NULL) return root;
+
+        if(key < root->data)
+            root->left = AVLdelete(root->left, key);
+        else if(key > root->data)
+            root->right = AVLdelete(root->right, key);
+        else{
+            if(root->left == NULL || root->right == NULL){
+                Node* temp = root->left ? root->left : root->right;
+                delete root;
+                return temp;
+            }
+            else{
+                Node* temp = Findmin(root->right);
+                root->data = temp->data;
+                root->right = AVLdelete(root->right, temp->data);
+            }
+        }
+
+        root->height = max(height(root->left), height(root->right)) + 1;
+        int balancefactor = height(root->left) - height(root->right);
+
+        // LL
+        if(balancefactor > 1 && height(root->left->left) >= height(root->left->right))
+            return rightrotation(root);
+
+        // LR
+        if(balancefactor > 1 && height(root->left->left) < height(root->left->right)){
+            root->left = leftrotation(root->left);
+            return rightrotation(root);
+        }
+
+        // RR
+        if(balancefactor < -1 && height(root->right->right) >= height(root->right->left))
+            return leftrotation(root);
+
+        // RL
+        if(balancefactor < -1 && height(root->right->right) < height(root->right->left)){
+            root->right = rightrotation(root->right);
+            return leftrotation(root);
+        }
+
+        return root;
+    }
+};
+
+int main(){
+    int n;
+    cin >> n;
+    int key;
+    cin >> key;
+
+    vector<int> A(n);
+    Tree t;
+
+    for(int i = 0; i < n; i++)
+        cin >> A[i];
+
+    for(int i = 0; i < n; i++)
+        t.insertinto(A[i]);
+
+    if(t.root != NULL)
+        cout << t.root->data;
+    t.root = t.AVLdelete(t.root, key);
+
+
+    return 0;
+}
