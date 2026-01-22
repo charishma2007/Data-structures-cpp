@@ -1,0 +1,58 @@
+#include<bits/stdc++.h>
+using namespace std;
+class Node{
+    public:
+    int data;
+    Node*left;
+    Node* right;
+
+    Node(int val){
+        data = val;
+        left = right = NULL;
+    }
+};
+Node* createtree(){
+    int value;
+    cin >> value;
+    if(value == -1){
+        return NULL;
+    }
+    Node* root = new Node(value);
+
+    root->left = createtree();
+    root->right = createtree();
+    return root;
+}
+void levelorder(Node* root){
+    if(root == NULL) return;
+    queue<Node*>q;
+    q.push(root);
+    q.push(NULL);
+    while(!q.empty()){
+        Node* current = q.front();
+        q.pop();
+        if(current == NULL){
+            cout << endl;
+
+            if(!q.empty()){
+                q.push(NULL);
+            }
+        }
+        else{
+        cout << current->data << " ";
+        if(current->left != NULL){
+            q.push(current->left);
+        }
+        if(current->right != NULL){
+            q.push(current->right);
+        }
+    }
+    }
+}
+int main(){
+    cout << "create binary tree: " ;
+    Node* root = createtree();
+    cout << "level order traversal: " ;
+    levelorder(root);
+
+}
